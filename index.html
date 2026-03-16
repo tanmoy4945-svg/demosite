@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <!-- Desktop view on mobile constraint -->
     <meta name="viewport" content="width=1200">
-    <title>Serene Aura | Premium Beauty Salon</title>
+    <title>BeautyFly | Premium Beauty Salon</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -89,7 +89,9 @@
                 whatsapp: "919876543210",
                 phone: "+91 98765 43210",
                 address: "123 Elegance Street, Luxury Block, Mumbai",
+                googleProfile: "https://google.com/maps/place/https://share.google/ZrH7jnsDA75gaPlTJ", // এখানে আপনার লিংক দিন
                 mapEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.80385802138!2d72.8614!3d19.0760!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTnCsDA0JzMzLjYiTiA3MsKwNTEnNDEuMCJF!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin"
+                
             },
             hero: {
                 title: "Experience Luxury Beauty Care",
@@ -125,7 +127,8 @@
                 "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&q=80&w=600",
                 "https://images.unsplash.com/photo-1595476108010-b4d1f8c2b1b1?auto=format&fit=crop&q=80&w=600"
             ],
-            reviews: [
+
+          reviews: [
                 { name: "Ananya Sharma", stars: 5, comment: "Absolutely loved the bridal makeup. Highly professional team!", avatar: "AS" },
                 { name: "Priya Patel", stars: 4, comment: "Great service and very relaxing environment. The hair spa is a must-try.", avatar: "PP" },
                 { name: "Sonia Khan", stars: 5, comment: "The best facial I have ever had. Glowing results!", avatar: "SK" }
@@ -397,7 +400,7 @@
                     <div class="w-72 bg-zinc-50 border-r border-zinc-200 p-8 flex flex-col">
                         <div class="text-2xl font-serif font-bold text-primary mb-12">ADMIN PANEL</div>
                         <nav class="space-y-2 flex-1">
-                            ${['dashboard', 'config', 'hero', 'about', 'services', 'gallery', 'builder'].map(tab => `
+                            ${['dashboard', 'config', 'hero', 'about', 'services', 'gallery', 'builder', 'hours'].map(tab => `
                                 <button onclick="setTab('${tab}')" class="w-full text-left px-5 py-4 rounded-2xl flex items-center gap-3 transition-all ${activeAdminTab === tab ? 'admin-sidebar-active' : 'text-zinc-500 hover:bg-zinc-100'}">
                                     <span class="capitalize font-bold">${tab}</span>
                                 </button>
@@ -449,7 +452,37 @@
                     <div class="grid grid-cols-5 gap-4 mb-8">${state.gallery.map((g,i) => `<div class="relative group h-32"><img src="${g}" class="w-full h-full object-cover rounded-xl"><button onclick="deleteItem('gallery', ${i})" class="absolute top-2 right-2 bg-white p-1 rounded-full text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa fa-times"></i></button></div>`).join('')}</div>
                     <input type="file" onchange="uploadImg(this, (url) => { state.gallery.push(url); saveData(); render(); })" class="p-4 bg-zinc-50 rounded-xl w-full">
                 `;
-                default: return `Building...`;
+                // Opening Hours এডিট করার জন্য
+case 'hours': return `
+    <h2 class="text-4xl font-serif mb-8">Opening Hours</h2>
+    <div class="space-y-6">
+        <div><label class="block text-xs font-bold uppercase mb-2">Weekdays</label>
+        <input type="text" value="${state.openHours.weekdays}" onchange="state.openHours.weekdays = this.value; saveData();" class="w-full p-4 bg-zinc-50 rounded-xl"></div>
+        <div><label class="block text-xs font-bold uppercase mb-2">Saturday</label>
+        <input type="text" value="${state.openHours.saturday}" onchange="state.openHours.saturday = this.value; saveData();" class="w-full p-4 bg-zinc-50 rounded-xl"></div>
+        <div><label class="block text-xs font-bold uppercase mb-2">Sunday</label>
+        <input type="text" value="${state.openHours.sunday}" onchange="state.openHours.sunday = this.value; saveData();" class="w-full p-4 bg-zinc-50 rounded-xl"></div>
+    </div>
+`;
+
+// Builder সেকশন সচল করার জন্য
+case 'builder': return `
+    <h2 class="text-4xl font-serif mb-8">Page Builder</h2>
+    <div class="space-y-4 mb-8">
+        ${state.sections.map((s, i) => `
+            <div class="p-4 bg-zinc-100 rounded-xl flex justify-between items-center">
+                <span class="font-bold">${s.title}</span>
+                <button onclick="state.sections.splice(${i},1); saveData(); render();" class="text-red-500">Delete</button>
+            </div>
+        `).join('')}
+    </div>
+    <div class="p-8 bg-zinc-50 rounded-3xl border">
+        <h3 class="font-bold mb-4">Add Custom Text Section</h3>
+        <input id="new_sec_t" placeholder="Section Title" class="w-full p-4 mb-4 rounded-xl border">
+        <textarea id="new_sec_c" placeholder="Section Content" class="w-full p-4 mb-4 rounded-xl border" rows="4"></textarea>
+        <button onclick="const t=document.getElementById('new_sec_t').value; const c=document.getElementById('new_sec_c').value; if(t&&c){ state.sections.push({title:t, content:c}); saveData(); render(); }" class="w-full py-4 bg-primary text-white rounded-xl font-bold">Add Section</button>
+    </div>
+`;
             }
         }
 
